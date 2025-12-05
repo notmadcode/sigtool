@@ -2,6 +2,7 @@
 
 import zlib
 
+
 class CRC32AndHashCodeCalculator:
     def __init__(self, signature_hex):
         self.signature_hex = signature_hex
@@ -32,8 +33,10 @@ class CRC32AndHashCodeCalculator:
 
     def calculate_crc32_and_hash_code(self):
         crc32 = self._calculate_crc32()
-        crc32 = f"0x{crc32:08x} ({crc32 - 0x100000000 if crc32 >= 0x80000000 else crc32})"
-        
+        crc32 = (
+            f"0x{crc32:08x} ({crc32 - 0x100000000 if crc32 >= 0x80000000 else crc32})"
+        )
+
         hashCode = self._calculate_hash_code()
 
         return {

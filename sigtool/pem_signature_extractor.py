@@ -3,6 +3,7 @@
 import base64
 import subprocess
 
+
 class PEMSignatureExtractor:
     def __init__(self, pem_path=None, pem_data=None):
         self.pem_path = pem_path
@@ -12,7 +13,7 @@ class PEMSignatureExtractor:
     def _extract_base64_cert(self):
         pem_data = self.pem_data
         if self.pem_path:
-            with open(self.pem_path, 'r') as pem_file:
+            with open(self.pem_path, "r") as pem_file:
                 pem_data = pem_file.read()
 
         start_marker = "-----BEGIN CERTIFICATE-----"
@@ -24,7 +25,7 @@ class PEMSignatureExtractor:
         if start_index == -1 or end_index == -1:
             raise ValueError("Invalid PEM file: Certificate markers not found")
 
-        base64_cert = pem_data[start_index + len(start_marker):end_index].strip()
+        base64_cert = pem_data[start_index + len(start_marker) : end_index].strip()
         return base64_cert
 
     def extract_signatures(self):
@@ -39,15 +40,19 @@ class PEMSignatureExtractor:
     def convert_rsa_to_pem(self, rsa_path):
         try:
             result = subprocess.run(
-                ['openssl', 'pkcs7', '-inform', 'DER', '-print_certs', '-in', rsa_path],
+                ["openssl", "pkcs7", "-inform", "DER", "-print_certs", "-in", rsa_path],
                 check=True,
                 stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
+                stderr=subprocess.PIPE,
             )
             if result.returncode != 0:
-                raise ValueError(f"Failed to convert RSA to PEM: {result.stderr.decode('utf-8')}")
-            
-            pem_data = result.stdout.decode('utf-8')
+                raise ValueError(
+                    f"Failed to convert RSA to PEM: {result.stderr.decode('utf-8')}"
+                )
+
+            pem_data = result.stdout.decode("utf-8")
             return pem_data
         except subprocess.CalledProcessError as e:
-            raise ValueError(f"Error during RSA to PEM conversion: {e.stderr.decode('utf-8')}")
+            raise ValueError(
+                f"Error during RSA to PEM conversion: {e.stderr.decode('utf-8')}"
+            )

@@ -2,6 +2,7 @@
 
 from typing import List
 
+
 class SmaliByteArrayGenerator:
     def __init__(self, signature_hex):
         self.signature_hex = signature_hex
@@ -11,18 +12,14 @@ class SmaliByteArrayGenerator:
         return [byte - 256 if byte > 127 else byte for byte in byte_array]
 
     def format_array_data(self, array_data: List[int]) -> str:
-        formatted_lines = [
-            "    nop",
-            "    label_0:",
-            "    .array_data"
-        ]
+        formatted_lines = ["    nop", "    label_0:", "    .array_data"]
         formatted_lines.extend(
-            f"        {'0x' if value >= 0 else '-0x'}{abs(value):02x}t" for value in array_data
+            f"        {'0x' if value >= 0 else '-0x'}{abs(value):02x}t"
+            for value in array_data
         )
-        formatted_lines.extend([
-            "    .end array_data",
-            f"    length:0x{len(array_data) * 2:03x}"
-        ])
+        formatted_lines.extend(
+            ["    .end array_data", f"    length:0x{len(array_data) * 2:03x}"]
+        )
         return "\n".join(formatted_lines)
 
     def generate_smali(self) -> str:

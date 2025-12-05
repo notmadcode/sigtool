@@ -2,6 +2,7 @@
 
 import hashlib
 
+
 class SignatureHashCalculator:
     def __init__(self, signature_hex):
         self.signature_hex = signature_hex
@@ -38,5 +39,5 @@ class SignatureHashCalculator:
             "MD5": self._calculate_md5(),
             "SHA-224": self._calculate_sha224(),
             "SHA-384": self._calculate_sha384(),
-            "SHA-512": self._calculate_sha512()
+            "SHA-512": self._calculate_sha512(),
         }

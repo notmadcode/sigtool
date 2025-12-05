@@ -3,6 +3,7 @@
 import base64
 import subprocess
 
+
 class PEMCertificateGenerator:
     def __init__(self, signature_hex):
         self.signature_hex = signature_hex
@@ -12,7 +13,7 @@ class PEMCertificateGenerator:
         if not self.signature_hex:
             raise ValueError("Signature hex is required to create the PEM certificate.")
         signature_bytes = bytes.fromhex(self.signature_hex)
-        encoded_signature = base64.b64encode(signature_bytes).decode('utf-8')
+        encoded_signature = base64.b64encode(signature_bytes).decode("utf-8")
         pem_certificate = "-----BEGIN CERTIFICATE-----\n"
         pem_certificate += encoded_signature
         pem_certificate += "\n-----END CERTIFICATE-----"
@@ -20,10 +21,10 @@ class PEMCertificateGenerator:
 
     def _get_certificate_details(self, pem_certificate):
         result = subprocess.run(
-            ['openssl', 'x509', '-text', '-noout'],
+            ["openssl", "x509", "-text", "-noout"],
             input=pem_certificate,
             capture_output=True,
-            text=True
+            text=True,
         )
         if result.returncode != 0:
             raise RuntimeError(f"Error: {result.stderr}")

@@ -1,3 +1,1 @@
-__package__ = [
-    "sigtool.sighooks.mt_enhanced_hook"
-]
+__package__ = ["sigtool.sighooks.mt_enhanced_hook"]

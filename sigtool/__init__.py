@@ -19,5 +19,5 @@ __all__ = [
     "PEMCertificateGenerator",
     "ColonUpperCase",
     "OutputFormatter",
-    "PEMSignatureExtractor"
+    "PEMSignatureExtractor",
 ]

@@ -7,6 +7,7 @@ import os
 
 from .pem_signature_extractor import PEMSignatureExtractor
 
+
 class APKSignatureExtractor:
     def __init__(self, apk_path):
         self.apk_path = apk_path
@@ -21,41 +22,43 @@ class APKSignatureExtractor:
             seek_offset = -min(65536, file_size)
             file.seek(seek_offset, 2)
             data = file.read(65536)
-            eocd_offset = data.rfind(b'PK\x05\x06')
+            eocd_offset = data.rfind(b"PK\x05\x06")
             if eocd_offset == -1:
-                raise ValueError("Invalid APK: End of Central Directory signature not found")
-            eocd = data[eocd_offset:eocd_offset + 22]
-            return struct.unpack('<I', eocd[16:20])[0]
+                raise ValueError(
+                    "Invalid APK: End of Central Directory signature not found"
+                )
+            eocd = data[eocd_offset : eocd_offset + 22]
+            return struct.unpack("<I", eocd[16:20])[0]
         except Exception as e:
             print(f"Error in _find_eocd: {repr(e)}")
             raise e
 
     def _find_apk_signing_block(self, file, cd_offset):
         file.seek(cd_offset - 24)
-        block_size = struct.unpack('<Q', file.read(8))[0]
+        block_size = struct.unpack("<Q", file.read(8))[0]
         magic = file.read(16)
-        if magic != b'APK Sig Block 42':
+        if magic != b"APK Sig Block 42":
             raise ValueError("Invalid APK: APK Signing Block not found")
         return block_size
 
     def _extract_first_signature(self, signing_block):
         index = 0
         while index < len(signing_block):
-            index = signing_block.find(b'\x30\x82', index)
+            index = signing_block.find(b"\x30\x82", index)
             if index == -1:
                 return None
-            length = struct.unpack_from('>H', signing_block, index + 2)[0]
+            length = struct.unpack_from(">H", signing_block, index + 2)[0]
             sig_length = 4 + length
             if index + sig_length <= len(signing_block):
-                return signing_block[index:index + sig_length]
+                return signing_block[index : index + sig_length]
             index += sig_length
         return None
-    
+
     def _extract_rsa(self):
         try:
-            with zipfile.ZipFile(self.apk_path, 'r') as zip_file:
+            with zipfile.ZipFile(self.apk_path, "r") as zip_file:
                 for file_name in zip_file.namelist():
-                    if file_name.startswith('META-INF/') and file_name.endswith('.RSA'):
+                    if file_name.startswith("META-INF/") and file_name.endswith(".RSA"):
                         with zip_file.open(file_name) as rsa_file:
                             return rsa_file.read()
             return None
@@ -68,11 +71,11 @@ class APKSignatureExtractor:
         rsa_file = self._extract_rsa()
         if rsa_file is None:
             return "No RSA file found"
-        
+
         with tempfile.NamedTemporaryFile(delete=False) as temp_rsa_file:
             temp_rsa_file.write(rsa_file)
             temp_rsa_path = temp_rsa_file.name
-        
+
         try:
             rsa_extractor = PEMSignatureExtractor()
             pem_data = rsa_extractor.convert_rsa_to_pem(temp_rsa_path)
@@ -81,10 +84,10 @@ class APKSignatureExtractor:
             return signature_hex
         finally:
             os.remove(temp_rsa_path)
-    
+
     def extract_signatures(self):
         try:
-            with open(self.apk_path, 'rb') as file:
+            with open(self.apk_path, "rb") as file:
                 try:
                     cd_offset = self._find_eocd(file)
                     block_size = self._find_apk_signing_block(file, cd_offset)

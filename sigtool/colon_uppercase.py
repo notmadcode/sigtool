@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 class ColonUpperCase:
     def __init__(self, apply_colons=False, convert_uppercase=False):
         self.apply_colons = apply_colons
@@ -7,7 +8,7 @@ class ColonUpperCase:
 
     def add_colons_to_hex(self, hex_string: str) -> str:
         if self.apply_colons:
-            return ':'.join(hex_string[i:i+2] for i in range(0, len(hex_string), 2))
+            return ":".join(hex_string[i : i + 2] for i in range(0, len(hex_string), 2))
         return hex_string
 
     def convert_to_uppercase(self, string: str) -> str:
@@ -16,8 +17,8 @@ class ColonUpperCase:
         return string.lower()
 
     def convert_crc32_and_hashcode(self, value: str) -> str:
-        if value.startswith('0x'):
-            return '0x' + self.convert_to_uppercase(value[2:])
+        if value.startswith("0x"):
+            return "0x" + self.convert_to_uppercase(value[2:])
         return self.convert_to_uppercase(value)
 
     def process_signature_hashes(self, hashes: dict) -> dict:
